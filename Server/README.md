@@ -1,7 +1,6 @@
 Documentation pour app.py
 Le fichier app.py est le point d'entrée principal de notre application Flask. Il définit et configure l'application et ses routes.
 
-Structure du fichier
 Le fichier app.py est structuré comme suit :
 
 ```python
