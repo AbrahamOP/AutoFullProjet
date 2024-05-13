@@ -4,6 +4,7 @@ Le fichier app.py est le point d'entrée principal de notre application Flask. I
 Structure du fichier
 Le fichier app.py est structuré comme suit :
 
+```python
 **from flask import Flask, render_template, request
 import proxmox
 
@@ -21,6 +22,7 @@ def create_vm():
 
 if __name__ == '__main__':
     app.run(debug=True)**
+```
 
 Détails
 L'application Flask est initialisée avec app = Flask(__name__).

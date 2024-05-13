@@ -2,6 +2,7 @@ Documentation du projet
 Structure du projet
 Le projet est structuré comme suit :
 
+```python
 README.md
 Server/
     app.py
@@ -19,6 +20,7 @@ static/
         vm.css
         vm.html
         vm.js
+```
 
 js
 Server
