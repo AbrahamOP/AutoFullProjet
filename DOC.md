@@ -9,17 +9,17 @@ Server/
     README.md
 static/
     image/
-    index.html
     lxc/
         lxc.css
         lxc.html
         lxc.js
-    README.md
-    style.css
     vm/
         vm.css
         vm.html
         vm.js
+    index.html
+    style.css
+    README.md
 ```
 
 js
