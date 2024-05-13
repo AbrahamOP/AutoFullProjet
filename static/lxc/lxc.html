@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Création de VM</title>
+    <link rel="stylesheet" href="lxc.css">
+    <link rel="icon" type="image/png" href="../image/favicon.png" />
+    <script src="lxc.js"></script>
+</head>
+
+<body>
+    <div id="stars"></div>
+    <div id="stars2"></div>
+    <div id="stars3"></div>
+
+    <div class="container">
+        <div class="form-title">
+
+            <h1>Création de lxc</h1>
+        </div>
+        <form>
+            <div class="form-group">
+                <label for="nom"><strong>Nom du contenaire</strong></label>
+                <input type="text" id="nom" name="nom">
+            </div>
+
+            <div class="form-group">
+                <label><strong>Modèles de conteneurs</strong></label>
+                <select name="OS" id="os">
+                    <option value="">-- Choisissez un modèles --</option>
+                    <option value="ubuntu-20.04">Ubuntu 22.04</option>
+                    <option value="ubuntu-22.04">Ubuntu 23.04</option>
+                    <option value="debian-11">Debian 11</option>
+                    <option value="debian-12">Debian 12</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="tailledisque"><strong>Nombre de Coeur</strong></label>
+                <input type="text" name="tailledisque"></input>
+            </div>
+
+            <div class="form-group">
+                <label><strong>Quantité de RAM à utiliser</strong></label>
+                <select name="OS" id="os">
+                    <option value="">-- Choisis la RAM --</option>
+                    <option value="ubuntu-20.04">2 Go</option>
+                    <option value="ubuntu-22.04">4 Go</option>
+                    <option value="debian-11">6 GO</option>
+                    <option value="debian-12">8 Go</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="tailledisque"><strong>Taille du disque en GO</strong></label>
+                <input type="text" name="tailledisque"></input>
+            </div>
+
+            <div class="barre-navigation">
+                <button class="bouton-gauche" type="button" onclick="window.location.href='../index.html'">Accueil</button>
+
+                <button class="bouton-droite" type="button" id="submitBtn">Créer la VM</button>
+            </div>
+        </form>
+    </div>
+</body>
+
+</html>

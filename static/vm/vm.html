@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Création de VM</title>
+    <link rel="stylesheet" href="vm.css">
+    <link rel="icon" type="image/png" href="../image/favicon.png" />
+    
+</head>
+
+<body>
+    <div id="stars"></div>
+    <div id="stars2"></div>
+    <div id="stars3"></div>
+
+    <div class="container">
+        <div class="form-title">
+            <h1>Création de VM</h1>
+        </div>
+        <form id="vmForm" method="POST">
+            <div class="form-group">
+            <label for="nom"><strong>Nom de la VM</strong></label>
+            <input type="text" id="nom" name="nom" required>
+            </div>
+
+            <div class="form-group">
+            <label><strong>Quelle OS ?</strong></label>
+            <select name="OS" id="os" required>
+                <option value="--">--</option>
+                <option value="ubuntu-20.04">Ubuntu 20.04</option>
+                <option value="ubuntu-22.04">Ubuntu 22.04</option>
+                <option value="debian-11">Debian 11</option>
+                <option value="debian-12">Debian 12</option>
+            </select>
+            </div>
+
+            <div class="form-group">
+            <label for="cores"><strong>Nombre de coeur</strong></label>
+            <input type="number" name="cores" min="0" max="32" required>
+            </div>
+
+            <div class="form-group">
+            <label for="ram"><strong>RAM</strong></label>
+            <select name="ram" id="ram" required>
+                <option value="--">--</option>
+                <option value="512">512 Mo</option>
+                <option value="1024">1 Go</option>
+                <option value="2048">2 Go</option>
+                <option value="4096">4 Go</option>
+                <option value="8192">8 Go</option>
+                <option value="16384">16 Go</option>
+            </select>
+            </div>
+
+            <div class="form-group">
+            <label for="disk"><strong>Disque (en GB)</strong></label>
+            <input type="number" id="disk" name="disk" required min="32">
+            </div>
+        </form>
+
+            <div class="barre-navigation">
+                <button class="bouton-gauche" type="button" onclick="window.location.href='../index.html'">Accueil</button>
+                <button class="bouton-droite" type="submit" id="submit">Créer la VM</button>
+            </div>
+        </form>
+    </div>
+    <script src="vm.js"></script>
+</body>
+
+</html>
