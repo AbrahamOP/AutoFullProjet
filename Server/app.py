@@ -38,7 +38,19 @@ def get_next_vmid(ticket, csrf_token):
 
 def validate_data(data):
     allowed_memory_values = {512, 1024, 2048, 4096, 8192, 16384}
-    allowed_os_templates = {'ubuntu-20.04', 'ubuntu-22.04'}
+    allowed_os_templates = {'ubuntu-20.04', 'ubuntu-22.04', 'debian-11', 'debian-10'}
+
+    if not isinstance(data['vm-name'], str):
+        raise ValueError("Invalid VM name")
+
+    if not isinstance(data['ct-name'], str):
+        raise ValueError("Invalid CT name")
+
+    if not isinstance(data['cores'], int) or data['cores'] <= 0:
+        raise ValueError("Invalid cores value")
+
+    if not isinstance(data['disk'], int) or data['disk'] <= 0:
+        raise ValueError("Invalid disk size")
 
     if data['ram'] not in allowed_memory_values:
         raise ValueError("Invalid memory value")
@@ -83,6 +95,7 @@ def create_vm():
         return jsonify({'error': f'HTTP error occurred: {http_err}'}), 500
     except Exception as err:
         return jsonify({'error': f'An error occurred: {err}'}), 500
+
 
 @app.route('/create-ct', methods=['POST'])
 def create_ct():
