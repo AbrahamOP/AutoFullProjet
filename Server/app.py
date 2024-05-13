@@ -36,11 +36,25 @@ def get_next_vmid(ticket, csrf_token):
     existing_vmids = [vm['vmid'] for vm in vm_list]
     return max([MIN_VM_ID] + existing_vmids) + 1
 
+def validate_data(data):
+    allowed_memory_values = {512, 1024, 2048, 4096, 8192, 16384}
+    allowed_os_templates = {'ubuntu-20.04', 'ubuntu-22.04'}
+
+    if data['ram'] not in allowed_memory_values:
+        raise ValueError("Invalid memory value")
+
+    if data['os-template'] not in allowed_os_templates:
+        raise ValueError("Invalid OS template")
+
+    return data
+
 @app.route('/create-vm', methods=['POST'])
 def create_vm():
     """Crée une VM en utilisant l'API Proxmox."""
     data = request.json
     try:
+        validate_data(data)  # Ajout de la validation des données
+
         ticket, csrf_token = get_proxmox_token()
         next_vmid = get_next_vmid(ticket, csrf_token)
 
@@ -51,7 +65,7 @@ def create_vm():
             'memory': data['ram'],
             'cores': data['cores'],
             'net0': 'e1000,bridge=vmbr0',
-#           'ostemplate': data['os-template'],
+            'ostemplate': data['os-template'],
             'disk': f"size={data['disk']}G"
         }
 
@@ -63,6 +77,8 @@ def create_vm():
         )
         response.raise_for_status()
         return jsonify({'message': f'VM créée avec succès! VMID: {next_vmid}'})
+    except ValueError as val_err:
+        return jsonify({'error': f'Validation error: {val_err}'}), 400
     except requests.HTTPError as http_err:
         return jsonify({'error': f'HTTP error occurred: {http_err}'}), 500
     except Exception as err:
