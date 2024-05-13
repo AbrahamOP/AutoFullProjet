@@ -43,7 +43,7 @@ label {
     border-radius: 20px;
     -webkit-transform-style: preserve-3d;
     transform-style: preserve-3d;
-    background-image: url('Design_sans_titre4.png');
+    background-image: url('../image/Design_sans_titre4.png');
 }
 
 .form-title {
