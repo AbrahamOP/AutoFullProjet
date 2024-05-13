@@ -22,8 +22,7 @@ static/
     README.md
 ```
 
-js
-Server
+
 Le serveur est écrit en Python et utilise le framework Flask. Il est défini dans le fichier app.py. Il expose deux routes principales :
 
 / : Renvoie la page d'accueil.
