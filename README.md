@@ -1,7 +1,7 @@
 # AutoFullProjet
 
 :construction: :construction: :construction: :construction: :construction: :construction: :construction: :construction: :construction: :construction: :construction: :construction:
-EN COUR DE DEVELOPMENT
+EN COUR DE DÉVELOPPEMENT
 :construction: :construction: :construction: :construction: :construction: :construction: :construction: :construction: :construction: :construction: :construction: :construction:
 
 
