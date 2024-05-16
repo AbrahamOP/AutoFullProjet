@@ -11,20 +11,22 @@ load_dotenv()
 
 PROXMOX_IP = os.getenv('PROXMOX_IP')
 NODE = os.getenv('PROXMOX_NODE')
+PROXMOX_USERNAME = os.getenv('PROXMOX_USERNAME')
+PROXMOX_PASSWORD = os.getenv('PROXMOX_PASSWORD')
 MIN_VM_ID = 200
 
 def get_proxmox_token():
     """Authentification à l'API Proxmox pour obtenir le ticket et le CSRF token."""
     response = requests.post(
         f'https://{PROXMOX_IP}/api2/json/access/ticket',
-        data={'username': os.getenv('PROXMOX_USERNAME'), 'password': os.getenv('PROXMOX_PASSWORD')},
-        verify=False  # pour les environnements de production, configurez SSL/TLS correctement
+        data={'username': PROXMOX_USERNAME, 'password': PROXMOX_PASSWORD},
+        verify=True  # Assurez-vous que SSL/TLS est configuré correctement
     )
-    response.raise_for_status()  # Lève une exception pour les codes de statut 4xx/5xx
+    response.raise_for_status()
     return response.json()['data']['ticket'], response.json()['data']['CSRFPreventionToken']
 
 def get_next_vmid(ticket, csrf_token):
-    """Récupération du prochain vmid disponible pour la création d'une VM."""
+    """Récupération du prochain VMID disponible."""
     headers = {'Cookie': f'PVEAuthCookie={ticket}', 'CSRFPreventionToken': csrf_token}
     response = requests.get(
         f'https://{PROXMOX_IP}/api2/json/cluster/resources?type=vm',
@@ -37,14 +39,12 @@ def get_next_vmid(ticket, csrf_token):
     return max([MIN_VM_ID] + existing_vmids) + 1
 
 def validate_data(data):
+    """Validation des données d'entrée."""
     allowed_memory_values = {512, 1024, 2048, 4096, 8192, 16384}
     allowed_os_templates = {'ubuntu-20.04', 'ubuntu-22.04', 'debian-11', 'debian-10'}
 
     if not isinstance(data['vm-name'], str):
         raise ValueError("Invalid VM name")
-
-    if not isinstance(data['ct-name'], str):
-        raise ValueError("Invalid CT name")
 
     if not isinstance(data['cores'], int) or data['cores'] <= 0:
         raise ValueError("Invalid cores value")
@@ -60,78 +60,46 @@ def validate_data(data):
 
     return data
 
-@app.route('/create-vm', methods=['POST'])
-def create_vm():
-    """Crée une VM en utilisant l'API Proxmox."""
-    data = request.json
+def create_resource(resource_type, data):
+    """Crée une VM ou un CT en utilisant l'API Proxmox."""
     try:
-        validate_data(data)  # Ajout de la validation des données
-
+        validate_data(data)
         ticket, csrf_token = get_proxmox_token()
         next_vmid = get_next_vmid(ticket, csrf_token)
 
         headers = {'Cookie': f'PVEAuthCookie={ticket}', 'CSRFPreventionToken': csrf_token}
-        vm_params = {
+        params = {
             'vmid': next_vmid,
-            'name': data['vm-name'],
+            'name' if resource_type == 'qemu' else 'hostname': data['vm-name'],
             'memory': data['ram'],
             'cores': data['cores'],
-            'net0': 'e1000,bridge=vmbr0',
+            'net0': 'e1000,bridge=vmbr0' if resource_type == 'qemu' else 'name=eth0,bridge=vmbr0',
             'ostemplate': data['os-template'],
-            'disk': f"size={data['disk']}G"
+            'disk' if resource_type == 'qemu' else 'rootfs': f"size={data['disk']}G"
         }
 
         response = requests.post(
-            f'https://{PROXMOX_IP}/api2/json/nodes/{NODE}/qemu',
+            f'https://{PROXMOX_IP}/api2/json/nodes/{NODE}/{resource_type}',
             headers=headers,
-            data=vm_params,
-            verify=False
+            data=params,
+            verify=True  # Assurez-vous que SSL/TLS est configuré correctement
         )
         response.raise_for_status()
-        return jsonify({'message': f'VM créée avec succès! VMID: {next_vmid}'})
+        return jsonify({'message': f'{resource_type.upper()} créé avec succès! VMID: {next_vmid}'})
     except ValueError as val_err:
         return jsonify({'error': f'Validation error: {val_err}'}), 400
-    except requests.HTTPError as http_err:
-        return jsonify({'error': f'HTTP error occurred: {http_err}'}), 500
+    except requests.exceptions.RequestException as req_err:
+        return jsonify({'error': f'Request error: {req_err}'}), 500
     except Exception as err:
         return jsonify({'error': f'An error occurred: {err}'}), 500
 
+@app.route('/create-vm', methods=['POST'])
+def create_vm():
+    return create_resource('qemu', request.json)
 
 @app.route('/create-ct', methods=['POST'])
 def create_ct():
-    """Crée un CT en utilisant l'API Proxmox."""
-    data = request.json
-    try:
-        validate_data(data)  # Utilisez la même fonction de validation des données
-
-        ticket, csrf_token = get_proxmox_token()
-        next_vmid = get_next_vmid(ticket, csrf_token)
-
-        headers = {'Cookie': f'PVEAuthCookie={ticket}', 'CSRFPreventionToken': csrf_token}
-        ct_params = {
-            'vmid': next_vmid,
-            'hostname': data['vm-name'],
-            'memory': data['ram'],
-            'cores': data['cores'],
-            'net0': 'name=eth0,bridge=vmbr0',
-            'ostemplate': data['os-template'],
-            'rootfs': f"size={data['disk']}G"
-        }
-
-        response = requests.post(
-            f'https://{PROXMOX_IP}/api2/json/nodes/{NODE}/lxc',
-            headers=headers,
-            data=ct_params,
-            verify=False
-        )
-        response.raise_for_status()
-        return jsonify({'message': f'CT créé avec succès! VMID: {next_vmid}'})
-    except ValueError as val_err:
-        return jsonify({'error': f'Validation error: {val_err}'}), 400
-    except requests.HTTPError as http_err:
-        return jsonify({'error': f'HTTP error occurred: {http_err}'}), 500
-    except Exception as err:
-        return jsonify({'error': f'An error occurred: {err}'}), 500
+    return create_resource('lxc', request.json)
 
 @app.route('/')
 def index():

@@ -56,12 +56,14 @@ label {
 }
 
 input[type="text"],
+input[type="number"],
 textarea {
     width: 100%;
     padding: 10px 0;
     margin-top: 5px;
     border: 1px solid #ccc;
     border-radius: 5px;
+    font-weight: bold;
 }
 
 .barre-navigation {
@@ -83,6 +85,7 @@ button {
     transition: all 0.3s ease-in-out;
     cursor: pointer;
     margin-top: 30px;
+    font-weight: bold;
 }
 
 select {

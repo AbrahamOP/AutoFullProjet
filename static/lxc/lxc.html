@@ -1,13 +1,11 @@
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Création de VM</title>
+    <title>Création de LXC</title>
     <link rel="stylesheet" href="lxc.css">
     <link rel="icon" type="image/png" href="../image/favicon.png" />
-    <script src="lxc.js"></script>
 </head>
 
 <body>
@@ -17,53 +15,54 @@
 
     <div class="container">
         <div class="form-title">
-
-            <h1>Création de lxc</h1>
+            <h1>Création de LXC</h1>
         </div>
-        <form>
+        <form id="lxcForm" method="POST">
             <div class="form-group">
-                <label for="nom"><strong>Nom du contenaire</strong></label>
-                <input type="text" id="nom" name="nom">
+                <label for="nom"><strong>Nom du conteneur</strong></label>
+                <input type="text" id="nom" name="nom" required>
             </div>
 
             <div class="form-group">
-                <label><strong>Modèles de conteneurs</strong></label>
-                <select name="OS" id="os">
+                <label for="template"><strong>Modèles de conteneurs</strong></label>
+                <select name="template" id="template" required>
                     <option value="">--</option>
-                    <option value="ubuntu-20.04">Ubuntu 22.04</option>
-                    <option value="ubuntu-22.04">Ubuntu 23.04</option>
+                    <option value="ubuntu-22.04">Ubuntu 22.04</option>
+                    <option value="ubuntu-23.04">Ubuntu 23.04</option>
                     <option value="debian-11">Debian 11</option>
                     <option value="debian-12">Debian 12</option>
                 </select>
             </div>
 
             <div class="form-group">
-                <label for="tailledisque"><strong>Nombre de Coeur</strong></label>
-                <input type="number" name="tailledisque" max="32">
+                <label for="cores"><strong>Nombre de coeur</strong></label>
+                <input type="number" name="cores" min="0" max="32" required>
             </div>
 
             <div class="form-group">
-                <label><strong>Quantité de RAM à utiliser</strong></label>
-                <select name="OS" id="os">
-                    <option value="">--</option>
-                    <option value="ubuntu-20.04">2 Go</option>
-                    <option value="ubuntu-22.04">4 Go</option>
-                    <option value="debian-11">6 GO</option>
-                    <option value="debian-12">8 Go</option>
+                <label for="ram"><strong>Quantité de RAM (Go)</strong></label>
+                <select name="ram" id="ram" required>
+                    <option value="--">--</option>
+                    <option value="512">512 Mo</option>
+                    <option value="1024">1 Go</option>
+                    <option value="2048">2 Go</option>
+                    <option value="4096">4 Go</option>
+                    <option value="8192">8 Go</option>
+                    <option value="16384">16 Go</option>
                 </select>
             </div>
+
             <div class="form-group">
-                <label for="tailledisque"><strong>Taille du disque en GO</strong></label>
-                <input type="text" name="tailledisque" min="32">
+                <label for="disk"><strong>Taille du disque (Go)</strong></label>
+                <input type="number" id="disk" name="disk" min="32" required>
             </div>
 
             <div class="barre-navigation">
                 <button class="bouton-gauche" type="button" onclick="window.location.href='../index.html'">Accueil</button>
-
-                <button class="bouton-droite" type="button" id="submitBtn">Créer la VM</button>
+                <button class="bouton-droite" type="submit">Créer le LXC</button>
             </div>
         </form>
     </div>
+    <script src="lxc.js"></script>
 </body>
-
 </html>
