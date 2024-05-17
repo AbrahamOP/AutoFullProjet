@@ -3,10 +3,11 @@ import requests
 import json
 from dotenv import load_dotenv
 import os
+from flask_cors import CORS
 
 app = Flask(__name__, static_folder='../static')
+CORS(app)
 
-# Charger les variables d'environnement
 load_dotenv()
 
 PROXMOX_IP = os.getenv('PROXMOX_IP')
@@ -20,7 +21,7 @@ def get_proxmox_token():
     response = requests.post(
         f'https://{PROXMOX_IP}/api2/json/access/ticket',
         data={'username': PROXMOX_USERNAME, 'password': PROXMOX_PASSWORD},
-        verify=True  # Assurez-vous que SSL/TLS est configuré correctement
+        verify=True  
     )
     response.raise_for_status()
     return response.json()['data']['ticket'], response.json()['data']['CSRFPreventionToken']
@@ -82,7 +83,7 @@ def create_resource(resource_type, data):
             f'https://{PROXMOX_IP}/api2/json/nodes/{NODE}/{resource_type}',
             headers=headers,
             data=params,
-            verify=True  # Assurez-vous que SSL/TLS est configuré correctement
+            verify=True  
         )
         response.raise_for_status()
         return jsonify({'message': f'{resource_type.upper()} créé avec succès! VMID: {next_vmid}'})
@@ -95,11 +96,19 @@ def create_resource(resource_type, data):
 
 @app.route('/create-vm', methods=['POST'])
 def create_vm():
-    return create_resource('qemu', request.json)
+    response = create_resource('qemu', request.json)
+    response.headers['Access-Control-Allow-Origin'] = '*'  
+    response.headers['Access-Control-Allow-Methods'] = 'POST'
+    response.headers['Access-Control-Allow-Headers'] = 'Content-Type'
+    return response
 
 @app.route('/create-ct', methods=['POST'])
 def create_ct():
-    return create_resource('lxc', request.json)
+    response = create_resource('lxc', request.json)
+    response.headers['Access-Control-Allow-Origin'] = '*'  
+    response.headers['Access-Control-Allow-Methods'] = 'POST'
+    response.headers['Access-Control-Allow-Headers'] = 'Content-Type'
+    return response
 
 @app.route('/')
 def index():
